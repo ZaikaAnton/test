@@ -6,12 +6,19 @@ class Navigation {
 
     window.addEventListener("popstate", this.handleUrlChange.bind(this));
     window.onload = () => {
-      this.handleUrlChange();
+      const urlParams = new URLSearchParams(window.location.search);
+      const page = urlParams.get("page");
+      if (page) {
+        this.navigateToPage(page);
+      } else {
+        this.handleUrlChange();
+      }
     };
 
-    // Сохраняем текущую страницу в sessionStorage перед перезагрузкой
-    window.onbeforeunload = function () {
-      sessionStorage.setItem("lastPage", window.location.pathname);
+    window.onbeforeunload = () => {
+      const currentPage = this.activePage;
+      const baseUrl = window.location.origin + "/test/";
+      sessionStorage.setItem("redirectUrl", `${baseUrl}?page=${currentPage}`);
     };
   }
 
@@ -31,26 +38,57 @@ class Navigation {
 
   handleUrlChange() {
     const path = window.location.pathname;
-    if (path === "/activity") {
+    if (path === "/test/activity") {
       this.setActivePage("resume");
       mapPage.clear();
       timerPage.clear();
       mainPage.render(this.controlBar, this.listMagazine);
       mapPage.stopTimer();
-    } else if (path === "/map") {
+    } else if (path === "/test/map") {
       this.setActivePage("map");
       mapPage.render();
       mainPage.clear();
       timerPage.clear();
-    } else if (path === "/timer") {
+    } else if (path === "/test/timer") {
       this.setActivePage("timer");
       mainPage.clear();
       mapPage.clear();
       timerPage.render();
       mapPage.stopTimer();
     } else {
-      history.replaceState(null, "", "/activity");
+      history.replaceState(null, "", "/test/activity");
       this.handleUrlChange();
+    }
+  }
+
+  navigateToPage(page) {
+    switch (page) {
+      case "resume":
+        this.setActivePage("resume");
+        mainPage.render(this.controlBar, this.listMagazine);
+        mapPage.clear();
+        timerPage.clear();
+        mapPage.stopTimer();
+        break;
+      case "map":
+        this.setActivePage("map");
+        mapPage.render();
+        mainPage.clear();
+        timerPage.clear();
+        break;
+      case "timer":
+        this.setActivePage("timer");
+        timerPage.render();
+        mainPage.clear();
+        mapPage.clear();
+        mapPage.stopTimer();
+        break;
+      default:
+        this.setActivePage("resume");
+        mainPage.render(this.controlBar, this.listMagazine);
+        mapPage.clear();
+        timerPage.clear();
+        mapPage.stopTimer();
     }
   }
 
@@ -85,13 +123,13 @@ class Navigation {
       ${headerNavBar.create()}
       <div class="nav-container d-flex flex-wrap justify-content-between align-items-center">
         <div class="btn-group mb-2 mb-lg-0">
-            <a href="/activity" onclick="event.preventDefault(); navigationComponent.handlePageChange(event, 'resume', '/activity');"><button id="resume-btn" class="btn btn-outline-primary ${
+            <a href="/test/activity" onclick="event.preventDefault(); navigationComponent.handlePageChange(event, 'resume', '/test/activity');"><button id="resume-btn" class="btn btn-outline-primary ${
               this.activePage === "resume" ? "active-btn" : ""
             }">Resume</button></a>
-            <a href="/map" onclick="event.preventDefault(); navigationComponent.handlePageChange(event, 'map', '/map');"><button id="map-btn" class="btn btn-outline-primary ${
+            <a href="/test/map" onclick="event.preventDefault(); navigationComponent.handlePageChange(event, 'map', '/test/map');"><button id="map-btn" class="btn btn-outline-primary ${
               this.activePage === "map" ? "active-btn" : ""
             }">Map</button></a>
-            <a href="/timer" onclick="event.preventDefault(); navigationComponent.handlePageChange(event, 'timer', '/timer');"><button id="timer-btn" class="btn btn-outline-primary ${
+            <a href="/test/timer" onclick="event.preventDefault(); navigationComponent.handlePageChange(event, 'timer', '/test/timer');"><button id="timer-btn" class="btn btn-outline-primary ${
               this.activePage === "timer" ? "active-btn" : ""
             }">Timer</button></a>
         </div>
@@ -109,12 +147,11 @@ class Navigation {
       this.handleUrlChange();
     }
 
-    // Проверяем, была ли предыдущая страница сохранена в sessionStorage,
-    // и если да, перенаправляем пользователя на нее
-    const lastPage = sessionStorage.getItem("lastPage");
-    if (lastPage) {
-      sessionStorage.removeItem("lastPage");
-      window.location.href = lastPage;
+    // Перенаправляем пользователя на сохраненную страницу после перезагрузки
+    const redirectUrl = sessionStorage.getItem("redirectUrl");
+    if (redirectUrl) {
+      sessionStorage.removeItem("redirectUrl");
+      window.location.href = redirectUrl;
     }
   }
 }
