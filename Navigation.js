@@ -24,8 +24,8 @@ class Navigation {
 
   setInitialPage() {
     const path = window.location.pathname;
-    if (path === "/" || path === "") {
-      history.replaceState(null, "", "/activity");
+    if (path === "/test/" || path === "/test") {
+      history.replaceState(null, "", "/test/activity");
       this.setActivePage("resume");
       mainPage.render(this.controlBar, this.listMagazine);
       mapPage.clear();
@@ -38,7 +38,11 @@ class Navigation {
 
   handleUrlChange() {
     const path = window.location.pathname;
-    if (path === "/test/activity") {
+    const searchParams = new URLSearchParams(window.location.search);
+    const page = searchParams.get("page");
+    if (page) {
+      this.navigateToPage(page);
+    } else if (path === "/test/activity") {
       this.setActivePage("resume");
       mapPage.clear();
       timerPage.clear();
