@@ -5,23 +5,24 @@ class Navigation {
     this.listMagazine = new Magazine();
 
     window.addEventListener("popstate", this.handleUrlChange.bind(this));
+
     window.onload = () => {
-      const urlParams = new URLSearchParams(window.location.search);
-      const page = urlParams.get("page");
-      if (page) {
-        this.navigateToPage(page);
+      const savedPage = sessionStorage.getItem("savedPage");
+      if (savedPage) {
+        sessionStorage.removeItem("savedPage");
+        this.navigateToPage(savedPage);
       } else {
         this.handleUrlChange();
       }
     };
-
-    window.onbeforeunload = () => {
-      const currentPage = this.activePage;
-      const baseUrl = window.location.origin + "/test/";
-      sessionStorage.setItem("redirectUrl", `${baseUrl}?page=${currentPage}`);
-    };
   }
 
+  // Функция для сохранения текущей страницы перед перезагрузкой
+  saveCurrentPage() {
+    sessionStorage.setItem("savedPage", this.activePage);
+  }
+
+  // Функция, которая устанавливает страницу по умолчанию
   setInitialPage() {
     const path = window.location.pathname;
     if (path === "/test/" || path === "/test") {
@@ -36,13 +37,10 @@ class Navigation {
     return false;
   }
 
+  // Функция, которая обрабатывает изменение URL
   handleUrlChange() {
     const path = window.location.pathname;
-    const searchParams = new URLSearchParams(window.location.search);
-    const page = searchParams.get("page");
-    if (page) {
-      this.navigateToPage(page);
-    } else if (path === "/test/activity") {
+    if (path === "/test/activity") {
       this.setActivePage("resume");
       mapPage.clear();
       timerPage.clear();
@@ -65,6 +63,7 @@ class Navigation {
     }
   }
 
+  // Функция для навигации на определенную страницу
   navigateToPage(page) {
     switch (page) {
       case "resume":
@@ -96,6 +95,7 @@ class Navigation {
     }
   }
 
+  // Функция для обработки переходов
   handlePageChange(event, page, path) {
     event.preventDefault();
     if (this.isActivePage(page)) return;
@@ -103,6 +103,7 @@ class Navigation {
     this.handleUrlChange();
   }
 
+  // Функция для проверки активной страницы
   isActivePage(page) {
     return this.activePage === page;
   }
@@ -150,15 +151,13 @@ class Navigation {
     if (!this.setInitialPage()) {
       this.handleUrlChange();
     }
-
-    // Перенаправляем пользователя на сохраненную страницу после перезагрузки
-    const redirectUrl = sessionStorage.getItem("redirectUrl");
-    if (redirectUrl) {
-      sessionStorage.removeItem("redirectUrl");
-      window.location.href = redirectUrl;
-    }
   }
 }
 
 const navigationComponent = new Navigation();
 navigationComponent.render();
+
+// Сохраняем текущую страницу перед перезагрузкой
+window.onbeforeunload = () => {
+  navigationComponent.saveCurrentPage();
+};
