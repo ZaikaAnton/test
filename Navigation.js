@@ -1,6 +1,6 @@
 class Navigation {
   constructor() {
-    this.activePage = localStorage.getItem("activePage") || "resume"; // Загружаем сохраненную активную страницу или устанавливаем по умолчанию
+    this.activePage = localStorage.getItem("activePage") || "resume";
     this.controlBar = new ControlBar();
     this.listMagazine = new Magazine();
 
@@ -8,9 +8,12 @@ class Navigation {
     window.onload = () => {
       this.handleUrlChange();
     };
+
+    window.onbeforeunload = function () {
+      localStorage.setItem("lastPage", window.location.pathname);
+    };
   }
 
-  // Функция, которая устанавливает страницу по умолчанию, когда приложение только открывается
   setInitialPage() {
     const path = window.location.pathname;
     if (path === "/" || path === "") {
@@ -25,7 +28,6 @@ class Navigation {
     return false;
   }
 
-  // Функция, которая открывает нужный компонент
   handleUrlChange() {
     const path = window.location.pathname;
     if (path === "/activity") {
@@ -51,15 +53,13 @@ class Navigation {
     }
   }
 
-  // Новая универсальная функция для обработки переходов
   handlePageChange(event, page, path) {
     event.preventDefault();
-    if (this.isActivePage(page)) return; // Проверка текущей активной страницы
+    if (this.isActivePage(page)) return;
     history.pushState(null, "", path);
     this.handleUrlChange();
   }
 
-  // Функция для проверки активной страницы
   isActivePage(page) {
     return this.activePage === page;
   }
@@ -106,6 +106,14 @@ class Navigation {
     ROOT_NAVIGATION.innerHTML = htmlNavigation;
     if (!this.setInitialPage()) {
       this.handleUrlChange();
+    }
+
+    // Проверяем, была ли предыдущая страница сохранена в локальном хранилище,
+    // и если да, перенаправляем пользователя на нее
+    const lastPage = localStorage.getItem("lastPage");
+    if (lastPage) {
+      localStorage.removeItem("lastPage");
+      window.location.href = lastPage;
     }
   }
 }
