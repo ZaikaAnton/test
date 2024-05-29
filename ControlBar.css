@@ -1,0 +1,50 @@
+.resume-header,
+.control-bar {
+  width: 100%;
+  max-width: 350px;
+  margin-left: 10%;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  background-color: #f9f9f9;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.control-bar h2 {
+  font-size: 20px;
+  margin-bottom: 15px;
+}
+
+.control-bar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.control-bar ul li {
+  margin-bottom: 10px;
+}
+
+.control-bar ul li a {
+  text-decoration: none;
+  color: #333;
+  display: flex;
+  align-items: center;
+}
+
+.control-bar ul li a img {
+  margin-right: 10px;
+  width: 24px;
+  height: 24px;
+}
+
+.control-bar button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.control-bar button img {
+  width: 24px;
+  height: 24px;
+}
