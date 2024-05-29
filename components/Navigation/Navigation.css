@@ -1,0 +1,17 @@
+.nav-container .btn-outline-primary {
+  margin: 5px;
+  width: 100px;
+}
+
+.nav-container .active-btn {
+  color: #fff;
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
+.nav-line {
+  border: 0px;
+  height: 2px;
+  background-color: #007bff;
+  margin-top: 2px;
+}
