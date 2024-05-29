@@ -9,8 +9,9 @@ class Navigation {
       this.handleUrlChange();
     };
 
+    // Сохраняем текущую страницу в sessionStorage перед перезагрузкой
     window.onbeforeunload = function () {
-      localStorage.setItem("lastPage", window.location.pathname);
+      sessionStorage.setItem("lastPage", window.location.pathname);
     };
   }
 
@@ -108,11 +109,11 @@ class Navigation {
       this.handleUrlChange();
     }
 
-    // Проверяем, была ли предыдущая страница сохранена в локальном хранилище,
+    // Проверяем, была ли предыдущая страница сохранена в sessionStorage,
     // и если да, перенаправляем пользователя на нее
-    const lastPage = localStorage.getItem("lastPage");
+    const lastPage = sessionStorage.getItem("lastPage");
     if (lastPage) {
-      localStorage.removeItem("lastPage");
+      sessionStorage.removeItem("lastPage");
       window.location.href = lastPage;
     }
   }
